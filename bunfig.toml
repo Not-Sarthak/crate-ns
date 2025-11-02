@@ -1,0 +1,10 @@
+[install]
+# Set the package manager to use Bun's lock file
+lockfile = true
+
+[install.scopes]
+# Optional: Configure package scopes if needed
+
+[run]
+# Automatically install dependencies when running scripts
+auto = true
