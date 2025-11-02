@@ -132,19 +132,23 @@ export function TerminalBody() {
   return (
     <div className="terminal-grid-bg py-4 flex flex-col items-stretch">
       <BlockSpacer />
+      <BlockSpacer />
+      <BlockSpacer />
       <Intro />
       {!submitted && (
         <div className="flex text-sm px-4">
+          <div className='underline'>
           <span className="text-black/40 mr-2">{`➜`}</span>
           <span className="text-black">~/docs</span>
           <span className="ml-2 text-black">$</span>
+          </div>
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleSubmit}
             placeholder="https://docs.example.com"
-            className="ml-2 bg-transparent outline-none text-black/60 placeholder:text-black/40 flex-1"
+            className="ml-2 underline bg-transparent outline-none text-black/60 placeholder:text-black/40 flex-1"
           />
         </div>
       )}
@@ -159,6 +163,8 @@ export function TerminalBody() {
           </div>
         </>
       )}
+      <BlockSpacer />
+      <BlockSpacer />
       {submitted && results && (
         <>
           <div className="mt-2 w-full rounded-md bg-[#f5e6d4] px-3 py-2 text-[12px] text-black/80">
@@ -224,16 +230,13 @@ export function TerminalBody() {
         </>
       )}
       <BlockSpacer />
-      <MarkdownTitle title="# Why crate?" />
-      <Comment> - AI-powered tutorial generation from docs</Comment>
-      <Comment> - Auto-generates structured markdown scaffolds</Comment>
-      <Comment> - Includes cost estimates and difficulty levels</Comment>
-      <Comment> - Export CSV index for easy tracking</Comment>
       <BlockSpacer />
-      <MarkdownTitle title="# Perfect for" />
-      <Comment> - Developer advocates building tutorial pipelines</Comment>
-      <Comment> - Technical writers planning content</Comment>
-      <Comment> - Open-source projects creating contributor tasks</Comment>
+      <BlockSpacer />
+      <MarkdownTitle title="# Why crate?" />
+      <Comment> - generate tutorials from docs</Comment>
+      <Comment> - auto-generates structured markdown scaffolds</Comment>
+      <Comment> - includes cost estimates and difficulty levels</Comment>
+      <Comment> - exports CSV index for easy tracking</Comment>
       <BlockSpacer />
       <div className="my-2 h-px bg-white/10" />
       <BlockSpacer />
