@@ -1,6 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import * as cheerio from 'cheerio'
 
+export const maxDuration = 10
+export const runtime = 'nodejs'
+
+export async function OPTIONS(request: NextRequest) {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  })
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { url } = await request.json()
@@ -20,7 +34,7 @@ export async function POST(request: NextRequest) {
     const visitedUrls = new Set<string>()
     const pages: Array<{ url: string; title: string; content: string }> = []
     const urlsToVisit = [url]
-    const maxPages = 50 // Limit to avoid overload
+    const maxPages = 15 // Reduced for free tier timeout limits
 
     while (urlsToVisit.length > 0 && pages.length < maxPages) {
       const currentUrl = urlsToVisit.shift()!
@@ -87,15 +101,27 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({
-      pages,
-      totalPages: pages.length,
-    })
+    return NextResponse.json(
+      {
+        pages,
+        totalPages: pages.length,
+      },
+      {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+      }
+    )
   } catch (error) {
     console.error('Scraping error:', error)
     return NextResponse.json(
       { error: 'Failed to scrape documentation' },
-      { status: 500 }
+      {
+        status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+      }
     )
   }
 }
