@@ -36,11 +36,6 @@ router.post('/', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Pages array is required' })
     }
 
-    // Set SSE headers
-    res.setHeader('Content-Type', 'text/event-stream')
-    res.setHeader('Cache-Control', 'no-cache')
-    res.setHeader('Connection', 'keep-alive')
-
     // Combine all page content for analysis
     const combinedContent = pages
       .map((page: Page) => `Page: ${page.title}\nURL: ${page.url}\n${page.content}`)
@@ -88,8 +83,6 @@ IMPORTANT: Make outlines detailed and specific. Each section should describe exa
 
 Return only valid JSON, no additional text.`
 
-    res.write('data: {"status":"generating"}\n\n')
-
     const openai = getOpenAI()
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
@@ -119,8 +112,6 @@ Return only valid JSON, no additional text.`
     }
 
     const tutorialData = JSON.parse(jsonText)
-
-    res.write('data: {"status":"processing"}\n\n')
 
     // Generate markdown files for each tutorial
     const markdownFiles = tutorialData.tutorials.map((tutorial: TutorialIdea, index: number) => {
@@ -248,16 +239,11 @@ async function ${sectionTitle.toLowerCase().replace(/[^a-z0-9]/g, '')}(config: C
         .slice(0, 2)
         .join('-') || tutorial.title.toLowerCase().replace(/[^a-z0-9]+/g, '').slice(0, 10)
 
-      const result = {
+      return {
         filename: `${filename}.md`,
         content: markdown,
         metadata: tutorial,
       }
-
-      // Stream each tutorial as it's generated
-      res.write(`data: ${JSON.stringify({ type: 'tutorial', data: result, index })}\n\n`)
-
-      return result
     })
 
     // Generate CSV index
@@ -270,36 +256,18 @@ async function ${sectionTitle.toLowerCase().replace(/[^a-z0-9]/g, '')}(config: C
       .join('\n')
     const csv = csvHeader + csvRows
 
-    // Send final complete data
-    res.write(
-      `data: ${JSON.stringify({
-        type: 'complete',
-        data: {
-          tutorials: markdownFiles,
-          csv,
-          totalTutorials: markdownFiles.length,
-        },
-      })}\n\n`
-    )
-
-    res.end()
+    // Return JSON response
+    return res.json({
+      tutorials: markdownFiles,
+      csv,
+      totalTutorials: markdownFiles.length,
+    })
   } catch (error) {
     console.error('Generation error:', error)
-
-    if (!res.headersSent) {
-      return res.status(500).json({
-        error: 'Failed to generate tutorials',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      })
-    } else {
-      res.write(
-        `data: ${JSON.stringify({
-          type: 'error',
-          error: error instanceof Error ? error.message : 'Unknown error',
-        })}\n\n`
-      )
-      res.end()
-    }
+    return res.status(500).json({
+      error: 'Failed to generate tutorials',
+      details: error instanceof Error ? error.message : 'Unknown error',
+    })
   }
 })
 
