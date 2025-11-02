@@ -8,6 +8,8 @@ import { Comment } from './comment'
 import { MarkdownTitle } from './markdown-title'
 import { CodeBlock } from './code-block'
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+
 export function TerminalBody() {
   const [input, setInput] = useState('')
   const [submitted, setSubmitted] = useState(false)
@@ -46,7 +48,7 @@ export function TerminalBody() {
     setLoading(true)
 
     try {
-      const scrapeResponse = await fetch('/api/scrape', {
+      const scrapeResponse = await fetch(`${API_URL}/api/scrape`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: input }),
@@ -56,7 +58,7 @@ export function TerminalBody() {
 
       const scrapeData = await scrapeResponse.json()
 
-      const generateResponse = await fetch('/api/generate', {
+      const generateResponse = await fetch(`${API_URL}/api/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pages: scrapeData.pages }),
@@ -118,7 +120,7 @@ export function TerminalBody() {
     setFollowUpLoading(true)
 
     try {
-      const refineResponse = await fetch('/api/refine', {
+      const refineResponse = await fetch(`${API_URL}/api/refine`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

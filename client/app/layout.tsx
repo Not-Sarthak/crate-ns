@@ -1,5 +1,6 @@
 import React from 'react'
 import { Geist, Geist_Mono } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/react'
 import './globals.css'
 
 const geistSans = Geist({
@@ -18,7 +19,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <html
       className={`bg-[#f2ece5] text-black font-mono ${geistSans.variable} ${geistMono.variable}`}
     >
-      <body className={`h-[full] min-h-screen`}>{children}</body>
+      <body className={`h-[full] min-h-screen`}>
+        {children}
+        <Analytics />
+      </body>
     </html>
   )
 }

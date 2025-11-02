@@ -11,6 +11,7 @@
     "lint": "bun --bun next lint"
   },
   "dependencies": {
+    "@vercel/analytics": "^1.5.0",
     "cheerio": "^1.0.0",
     "lucide-react": "^0.552.0",
     "next": "^15.0.3",
@@ -19,12 +20,14 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@tailwindcss/postcss": "^4.1.16",
+    "@types/bun": "latest",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4.0.0",
-    "tailwindcss": "^4.0.0",
-    "@types/bun": "latest"
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.16",
+    "typescript": "^5"
   }
 }
