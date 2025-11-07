@@ -23,6 +23,7 @@ export function TerminalBody() {
   const [followUpSpinIndex, setFollowUpSpinIndex] = useState(0)
   const [urlError, setUrlError] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
+  const [selectedTutorialIndex, setSelectedTutorialIndex] = useState(0)
 
   const spinFrames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
 
@@ -93,6 +94,7 @@ export function TerminalBody() {
 
       const data = await generateResponse.json()
       setResults(data)
+      setSelectedTutorialIndex(0)
       setLoading(false)
     } catch (err) {
       console.error(err)
@@ -108,8 +110,8 @@ export function TerminalBody() {
   }
 
   const copyToClipboard = () => {
-    if (!results || !results.tutorials[0]) return
-    navigator.clipboard.writeText(results.tutorials[0].content)
+    if (!results || !results.tutorials[selectedTutorialIndex]) return
+    navigator.clipboard.writeText(results.tutorials[selectedTutorialIndex].content)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
@@ -133,6 +135,7 @@ export function TerminalBody() {
 
       const refinedData = await refineResponse.json()
       setResults(refinedData)
+      setSelectedTutorialIndex(0)
       setFollowUpInput('')
       setFollowUpLoading(false)
     } catch (err) {
@@ -207,12 +210,21 @@ export function TerminalBody() {
               <span className="w-20 text-right">Actions</span>
             </div>
             {results.tutorials.map((tutorial: any, idx: number) => (
-              <div key={idx} className="flex items-center text-black/60 hover:text-black py-0.5 font-mono">
+              <div
+                key={idx}
+                className={`flex items-center py-0.5 font-mono cursor-pointer transition-colors ${
+                  selectedTutorialIndex === idx
+                    ? 'bg-black/10 text-black'
+                    : 'text-black/60 hover:text-black hover:bg-black/5'
+                }`}
+                onClick={() => setSelectedTutorialIndex(idx)}
+              >
                 <span className="flex-1">llms/{tutorial.filename}</span>
                 <span className="w-20 text-right">${tutorial.metadata.estimatedCost}</span>
                 <span className="w-20 text-right flex gap-2 justify-end">
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation()
                       navigator.clipboard.writeText(tutorial.content)
                     }}
                     className="hover:text-black cursor-pointer"
@@ -221,7 +233,8 @@ export function TerminalBody() {
                     <Copy size={10} />
                   </button>
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation()
                       const blob = new Blob([tutorial.content], { type: 'text/plain' })
                       const url = URL.createObjectURL(blob)
                       const a = document.createElement('a')
@@ -274,7 +287,7 @@ export function TerminalBody() {
             )}
           </div>
           <BlockSpacer />
-          <CodeBlock>{results.tutorials[0]?.content || ''}</CodeBlock>
+          <CodeBlock>{results.tutorials[selectedTutorialIndex]?.content || ''}</CodeBlock>
           <BlockSpacer />
         </>
       )}
